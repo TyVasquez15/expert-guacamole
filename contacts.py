@@ -1,5 +1,5 @@
 # Name: Tyler Vasquez
-# Date: 9/9/2026
+# Date: 9/14/2026
 # Provides functions for managing an employee contact list.
 
 def print_list(contacts):
@@ -12,68 +12,30 @@ def print_list(contacts):
 
     input("\nPress enter to continue.")
 
-def add_contact(contacts):
-    first_name = input("Enter First Name: ").strip()
-    while not first_name:
-        print("Invalid first name.")
-        first_name = input("Enter first name: ").strip()
 
-    last_name = input("Enter last name: ").strip()
-    while not last_name:
-        print("Invalid last name.")
-        last_name = input("Enter last name: ").strip()
-
+def add_contact(contacts, *, first_name, last_name):
+    """Add a new contact to the contact list."""
     contacts.append([first_name, last_name])
-    return contacts
 
-def modify_contact(contacts):
-    if len(contacts) == 0:
-        print("Contact list is empty. Add a contact before modifying it.")
-        input("\nPress enter to continue.")
-        return contacts
 
-    index_input = input("Enter the index number: ").strip()
+def modify_contact(contacts, *, first_name, last_name, index):
+    if 0 <= index < len(contacts):
+        contacts[index] = [first_name, last_name]
+        return True
 
-    try:
-        index = int(index_input)
-    except ValueError:
-        print("Invalid index number.")
-        return contacts
+    return False
 
-    if index < 0 or index >= len(contacts):
-        print("Invalid index number.")
-        return contacts
 
-    first_name = input("Enter first name: ").strip()
-    while not first_name:
-        print("Invalid first name.")
-        first_name = input("Enter first name: ").strip()
+def delete_contact(contacts, *, index):
+    if 0 <= index < len(contacts):
+        del contacts[index]
+        return True
 
-    last_name = input("Enter last name: ").strip()
-    while not last_name:
-        print("Invalid last name.")
-        last_name = input("Enter last name: ").strip()
+    return False
 
-    contacts[index] = [first_name, last_name]
-    return contacts
 
-def delete_contact(contacts):
-    if len(contacts) == 0:
-        print("The contact list is empty.")
-        return contacts
-
-    index_input = input("Enter the index number: ").strip()
-
-    try:
-        index = int(index_input)
-    except ValueError:
-        print("Invalid index number.")
-        return contacts
-
-    if index < 0 or index >= len(contacts):
-        print("Invalid index number.")
-        return contacts
-
-    del contacts[index]
-    return contacts
-
+def sort_contacts(contacts, *, column):
+    if column == 0:
+        contacts.sort(key=lambda contact: contact[0])
+    elif column == 1:
+        contacts.sort(key=lambda contact: contact[1])
