@@ -1,41 +1,58 @@
-# Name: Tyler Vasquez
-# Date: 9/14/2026
-# Provides functions for managing an employee contact list.
+Name: Tyler Vasquez
+Date: 9/16/2026
+Provides functions for managing an employee contact list.
 
-def print_list(contacts):
-    print("================== CONTACT LIST ==================")
-    print(f'{"Index":8}{"First Name":22}{"Last Name":22}')
-    print(f'{"======":8}{"====================":22}{"====================":22}')
+def add_contact(contacts, *, id, first_name, last_name):
+# Add a new contact to the contact dictionary.
+if id in contacts:
+return "Phone number already exists."
 
-    for i in range(len(contacts)):
-        print(f'{str(i):8}{contacts[i][0]:22}{contacts[i][1]:22}')
+contacts[id] = [first_name, last_name]
+return contacts[id]
 
-    input("\nPress enter to continue.")
+def modify_contact(contacts, *, id, first_name, last_name):
+# Modify an existing contact in the contact dictionary.
+if id not in contacts:
+return "Phone number does not exist."
 
+contacts[id] = [first_name, last_name]
+return contacts[id]
 
-def add_contact(contacts, *, first_name, last_name):
-    """Add a new contact to the contact list."""
-    contacts.append([first_name, last_name])
+def delete_contact(contacts, *, id):
+# Delete an existing contact from the contact dictionary.
+if id not in contacts:
+return "Invalid phone number."
 
+deleted_contact = contacts.pop(id)
+return deleted_contact
 
-def modify_contact(contacts, *, first_name, last_name, index):
-    if 0 <= index < len(contacts):
-        contacts[index] = [first_name, last_name]
-        return True
+def sort_contacts(contacts):
+# Sort contacts by last name and then first name.
+sorted_contacts = dict(
+sorted(
+contacts.items(),
+key=lambda contact: (contact[1][1], contact[1][0])
+)
+)
 
-    return False
+return sorted_contacts
 
+def find_contact(contacts, *, find):
+# Find contacts by phone number, first name, or last name.
+found_contacts = {}
 
-def delete_contact(contacts, *, index):
-    if 0 <= index < len(contacts):
-        del contacts[index]
-        return True
+if find in contacts:
+    found_contacts[find] = contacts[find]
 
-    return False
+for id, contact in contacts.items():
+    if find.lower() in contact[0].lower() or find.lower() in contact[1].lower():
+        found_contacts[id] = contact
 
+found_contacts = dict(
+    sorted(
+        found_contacts.items(),
+        key=lambda contact: (contact[1][1], contact[1][0])
+    )
+)
 
-def sort_contacts(contacts, *, column):
-    if column == 0:
-        contacts.sort(key=lambda contact: contact[0])
-    elif column == 1:
-        contacts.sort(key=lambda contact: contact[1])
+return found_contacts
