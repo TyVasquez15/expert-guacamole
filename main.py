@@ -1,112 +1,109 @@
 # Name: Tyler Vasquez
-# Date: 9/14/2026
-# Main driver and input program for the employee contact list.
+# Date: 9/20/2026
+#Main driver program for the employee contact list.
 
 import contacts
 
-
 def main():
-    contact_list = []
+    # Run the employee contact list program.
+    contact_list = {}
 
     while True:
         print("\n*** EMPLOYEE CONTACT MAIN MENU")
-        print("1. Print list")
-        print("2. Add contact")
-        print("3. Modify contact")
-        print("4. Delete contact")
-        print("5. Sort list by first name")
-        print("6. Sort list by last name")
-        print("7. Exit the program")
+        print("1. Add contact")
+        print("2. Modify contact")
+        print("3. Delete contact")
+        print("4. Print contact list")
+        print("5. Find contact")
+        print("6. Exit the program")
 
         choice = input("Enter menu choice: ").strip()
 
         if choice == "1":
-            contacts.print_list(contact_list)
+            phone_number = input("Enter phone number: ").strip()
 
-        elif choice == "2":
+            try:
+                phone_number = int(phone_number)
+            except ValueError:
+                print("Invalid phone number.")
+                continue
+
             first_name = input("Enter first name: ").strip()
-            while not first_name:
-                print("Invalid first name.")
-                first_name = input("Enter first name: ").strip()
-
             last_name = input("Enter last name: ").strip()
-            while not last_name:
-                print("Invalid last name.")
-                last_name = input("Enter last name: ").strip()
 
-            contacts.add_contact(
+            result = contacts.add_contact(
                 contact_list,
+                id=phone_number,
                 first_name=first_name,
                 last_name=last_name
             )
 
-        elif choice == "3":
-            if len(contact_list) == 0:
-                print("Contact list is empty. Add a contact before modifying it.")
-                continue
+            if isinstance(result, str):
+                print(result)
+            else:
+                print(f"Added: {result[0]} {result[1]}.")
 
-            index_input = input("Enter the index number: ").strip()
+        elif choice == "2":
+            phone_number = input("Enter phone number: ").strip()
 
             try:
-                index = int(index_input)
+                phone_number = int(phone_number)
             except ValueError:
-                print("Invalid index number.")
+                print("Phone number does not exist.")
                 continue
 
             first_name = input("Enter first name: ").strip()
-            while not first_name:
-                print("Invalid first name.")
-                first_name = input("Enter first name: ").strip()
-
             last_name = input("Enter last name: ").strip()
-            while not last_name:
-                print("Invalid last name.")
-                last_name = input("Enter last name: ").strip()
 
             result = contacts.modify_contact(
                 contact_list,
+                id=phone_number,
                 first_name=first_name,
-                last_name=last_name,
-                index=index
+                last_name=last_name
             )
 
-            if not result:
-                print("Invalid index number.")
+            if isinstance(result, str):
+                print(result)
+            else:
+                print(f"Modified: {result[0]} {result[1]}.")
 
-        elif choice == "4":
-            if len(contact_list) == 0:
-                print("The contact list is empty.")
-                continue
-
-            index_input = input("Enter the index number: ").strip()
+        elif choice == "3":
+            phone_number = input("Enter phone number: ").strip()
 
             try:
-                index = int(index_input)
+                phone_number = int(phone_number)
             except ValueError:
-                print("Invalid index number.")
+                print("Invalid phone number.")
                 continue
 
             result = contacts.delete_contact(
                 contact_list,
-                index=index
+                id=phone_number
             )
 
-            if not result:
-                print("Invalid index number.")
+            if isinstance(result, str):
+                print(result)
+            else:
+                print(f"Deleted: {result[0]} {result[1]}.")
+
+        elif choice == "4":
+            contacts.print_list(contact_list)
 
         elif choice == "5":
-            contacts.sort_contacts(contact_list, column=0)
+            search = input("Enter search string: ").strip()
+
+            found = contacts.find_contact(
+                contact_list,
+                find=search
+            )
+
+            contacts.print_found(found)
 
         elif choice == "6":
-            contacts.sort_contacts(contact_list, column=1)
-
-        elif choice == "7":
-            print("Exiting program.")
             break
 
         else:
-            print("Invalid choice, please choose again.")
-
+            print("Invalid menu choice.")
 
 if __name__ == "__main__":
     main()
