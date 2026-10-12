@@ -1,109 +1,72 @@
-# Name: Tyler Vasquez
-# Date: 9/20/2026
-#Main driver program for the employee contact list.
 
-import contacts
+# Name: Tyler Vasquez
+# Date: 10/11/2026
+# Runs the Tuffy Titan Weather Logger program.
+
+import weather
+
 
 def main():
-    # Run the employee contact list program.
-    contact_list = {}
+    """Run the Tuffy Titan Weather Logger menu."""
+    filename = "weather.json"
+    data = weather.read_data(filename=filename)
 
     while True:
-        print("\n*** EMPLOYEE CONTACT MAIN MENU")
-        print("1. Add contact")
-        print("2. Modify contact")
-        print("3. Delete contact")
-        print("4. Print contact list")
-        print("5. Find contact")
-        print("6. Exit the program")
+        print(" *** TUFFY TITAN WEATHER LOGGER MAIN MENU")
+        print("1. Set data filename")
+        print("2. Add weather data")
+        print("3. Print daily report")
+        print("4. Print historical report")
+        print("9. Exit the program")
 
-        choice = input("Enter menu choice: ").strip()
+        choice = input("Enter menu choice: ")
 
         if choice == "1":
-            phone_number = input("Enter phone number: ").strip()
-
-            try:
-                phone_number = int(phone_number)
-            except ValueError:
-                print("Invalid phone number.")
-                continue
-
-            first_name = input("Enter first name: ").strip()
-            last_name = input("Enter last name: ").strip()
-
-            result = contacts.add_contact(
-                contact_list,
-                id=phone_number,
-                first_name=first_name,
-                last_name=last_name
-            )
-
-            if isinstance(result, str):
-                print(result)
-            else:
-                print(f"Added: {result[0]} {result[1]}.")
+            filename = input("Enter data filename: ")
+            data = weather.read_data(filename=filename)
 
         elif choice == "2":
-            phone_number = input("Enter phone number: ").strip()
+            date = input("Enter date (YYYYMMDD): ")
+            time = input("Enter time (hhmmss): ")
 
             try:
-                phone_number = int(phone_number)
+                datetime_key = date + time
+                from datetime import datetime
+                datetime.strptime(datetime_key, "%Y%m%d%H%M%S")
+
+                temperature = int(input("Enter temperature: "))
+                humidity = int(input("Enter humidity: "))
+                rainfall = float(input("Enter rainfall: "))
+
+                data[datetime_key] = {
+                    "t": temperature,
+                    "h": humidity,
+                    "r": rainfall,
+                }
+
+                weather.write_data(data=data, filename=filename)
+
             except ValueError:
-                print("Phone number does not exist.")
-                continue
-
-            first_name = input("Enter first name: ").strip()
-            last_name = input("Enter last name: ").strip()
-
-            result = contacts.modify_contact(
-                contact_list,
-                id=phone_number,
-                first_name=first_name,
-                last_name=last_name
-            )
-
-            if isinstance(result, str):
-                print(result)
-            else:
-                print(f"Modified: {result[0]} {result[1]}.")
+                print("Invalid date, time, temperature, humidity, or rainfall.")
 
         elif choice == "3":
-            phone_number = input("Enter phone number: ").strip()
+            date = input("Enter date (YYYYMMDD): ")
 
             try:
-                phone_number = int(phone_number)
+                datetime.strptime(date, "%Y%m%d")
+                print(weather.report_daily(data=data, date=date))
             except ValueError:
-                print("Invalid phone number.")
-                continue
-
-            result = contacts.delete_contact(
-                contact_list,
-                id=phone_number
-            )
-
-            if isinstance(result, str):
-                print(result)
-            else:
-                print(f"Deleted: {result[0]} {result[1]}.")
+                print("Invalid date. Please use YYYYMMDD.")
 
         elif choice == "4":
-            contacts.print_list(contact_list)
+            print(weather.report_historical(data=data))
 
-        elif choice == "5":
-            search = input("Enter search string: ").strip()
-
-            found = contacts.find_contact(
-                contact_list,
-                find=search
-            )
-
-            contacts.print_found(found)
-
-        elif choice == "6":
+        elif choice == "9":
             break
 
         else:
             print("Invalid menu choice.")
+
 
 if __name__ == "__main__":
     main()
