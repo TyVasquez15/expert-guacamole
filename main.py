@@ -1,71 +1,99 @@
 
 # Name: Tyler Vasquez
-# Date: 10/11/2026
-# Runs the Tuffy Titan Weather Logger program.
+# Date: 10/22/2026
+# Runs the Tuffy Titan Contact List menu.
 
-import weather
+import contacts
+
+
+def print_contact_list(contact_list):
+    """Print all contacts in alphabetical order."""
+    print("==================== CONTACT LIST ====================")
+    print(f'{"Last Name":22}{"First Name":22}{"Phone":12}')
+    print(f'{"====================":22}{"====================":22}{"==========":12}')
+
+    for phone, names in contact_list.data.items():
+        first_name, last_name = names
+        print(f"{last_name:22}{first_name:22}{phone:12}")
 
 
 def main():
-    """Run the Tuffy Titan Weather Logger menu."""
-    filename = "weather.json"
-    data = weather.read_data(filename=filename)
+    """Run the Tuffy Titan Contact List application."""
+    contact_list = contacts.Contacts(filename="contacts.json")
 
     while True:
-        print(" *** TUFFY TITAN WEATHER LOGGER MAIN MENU")
-        print("1. Set data filename")
-        print("2. Add weather data")
-        print("3. Print daily report")
-        print("4. Print historical report")
-        print("9. Exit the program")
+        print("*** TUFFY TITAN CONTACT MAIN MENU")
+        print("1. Add contact")
+        print("2. Modify contact")
+        print("3. Delete contact")
+        print("4. Print contact list")
+        print("5. Set contact filename")
+        print("6. Exit the program")
 
-        choice = input("Enter menu choice: ")
+        choice = input("Enter menu choice: ").strip()
 
         if choice == "1":
-            filename = input("Enter data filename: ")
-            data = weather.read_data(filename=filename)
+            phone = input("Enter phone number: ").strip()
+            first_name = input("Enter first name: ").strip()
+            last_name = input("Enter last name: ").strip()
+
+            result = contact_list.add_contact(
+                id=phone,
+                first_name=first_name,
+                last_name=last_name
+            )
+
+            if result == "error2":
+                print("Phone number already exists.")
+            else:
+                print(f"Added: {first_name} {last_name}.")
 
         elif choice == "2":
-            date = input("Enter date (YYYYMMDD): ")
-            time = input("Enter time (hhmmss): ")
+            phone = input("Enter phone number: ").strip()
+            first_name = input("Enter first name: ").strip()
+            last_name = input("Enter last name: ").strip()
 
-            try:
-                datetime_key = date + time
-                from datetime import datetime
-                datetime.strptime(datetime_key, "%Y%m%d%H%M%S")
+            result = contact_list.modify_contact(
+                id=phone,
+                first_name=first_name,
+                last_name=last_name
+            )
 
-                temperature = int(input("Enter temperature: "))
-                humidity = int(input("Enter humidity: "))
-                rainfall = float(input("Enter rainfall: "))
-
-                data[datetime_key] = {
-                    "t": temperature,
-                    "h": humidity,
-                    "r": rainfall,
-                }
-
-                weather.write_data(data=data, filename=filename)
-
-            except ValueError:
-                print("Invalid date, time, temperature, humidity, or rainfall.")
+            if result == "error":
+                print("Invalid phone number.")
+            else:
+                print(f"Modified: {first_name} {last_name}.")
 
         elif choice == "3":
-            date = input("Enter date (YYYYMMDD): ")
+            phone = input("Enter phone number: ").strip()
 
-            try:
-                datetime.strptime(date, "%Y%m%d")
-                print(weather.report_daily(data=data, date=date))
-            except ValueError:
-                print("Invalid date. Please use YYYYMMDD.")
+            result = contact_list.delete_contact(id=phone)
+
+            if result == "error":
+                print("Invalid phone number.")
+            else:
+                first_name, last_name = result[phone]
+                print(f"Deleted: {first_name} {last_name}.")
 
         elif choice == "4":
-            print(weather.report_historical(data=data))
+            print_contact_list(contact_list)
 
-        elif choice == "9":
+        elif choice == "5":
+            filename = input("Enter contact filename: ").strip()
+
+            if filename:
+                contact_list.set_filename(filename=filename)
+                print(f"Contact filename set to {filename}.")
+            else:
+                print("Filename cannot be empty.")
+
+        elif choice == "6":
             break
 
         else:
             print("Invalid menu choice.")
+
+        print()
 
 
 if __name__ == "__main__":

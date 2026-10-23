@@ -1,79 +1,76 @@
+
 # Name: Tyler Vasquez
-# Date: 9/20/2026
-# Provides functions for managing an employee contact list.
+# Date: 10/22/2026
+# Provides a class for managing a saved Tuffy Titan contact list.
 
-def add_contact(contacts, *, id, first_name, last_name):
-    # Add a new contact to the contact dictionary.
-    if id in contacts:
-        return "Phone number already exists."
-
-    contacts[id] = [first_name, last_name]
-    return contacts[id]
-
-def modify_contact(contacts, *, id, first_name, last_name):
-    # Modify an existing contact in the contact dictionary.
-    if id not in contacts:
-        return "Phone number does not exist."
-
-    contacts[id] = [first_name, last_name]
-    return contacts[id]
+import json
 
 
-def delete_contact(contacts, *, id):
-    # Delete a contact from the contact dictionary.
-    if id not in contacts:
-        return "Invalid phone number."
+class Contacts:
+    """Manage contacts stored in a JSON file."""
 
-    return contacts.pop(id)
+    def __init__(self, *, filename="contacts.json"):
+        """Initialize contacts by loading the specified JSON file."""
+        self.filename = filename
+        self.data = {}
 
-def sort_contacts(contacts):
-    # Return contacts sorted by last name and then first name.
-    return dict(
-        sorted(
-            contacts.items(),
-            key=lambda item: (item[1][1].lower(), item[1][0].lower())
+        try:
+            with open(self.filename, "r", encoding="utf-8") as file:
+                self.data = json.load(file)
+        except FileNotFoundError:
+            self.data = {}
+
+    def save_contacts(self):
+        """Save the contact dictionary to the JSON file."""
+        with open(self.filename, "w", encoding="utf-8") as file:
+            json.dump(self.data, file, indent=4)
+
+    def sort_contacts(self):
+        """Sort contacts by last name and then first name."""
+        self.data = dict(
+            sorted(
+                self.data.items(),
+                key=lambda item: (
+                    item[1][1].lower(),
+                    item[1][0].lower()
+                )
+            )
         )
-    )
 
-def find_contact(contacts, *, find):
-    # Find contacts by phone number, first name, or last name.
-    found = {}
+    def add_contact(self, *, id, first_name, last_name):
+        """Add a contact unless its phone number already exists."""
+        if id in self.data:
+            return "error2"
 
-    if find.isnumeric():
-        phone_number = int(find)
+        self.data[id] = [first_name, last_name]
+        self.sort_contacts()
+        self.save_contacts()
+        return {id: self.data[id]}
 
-        if phone_number in contacts:
-            found[phone_number] = contacts[phone_number]
+    def modify_contact(self, *, id, first_name, last_name):
+        """Modify an existing contact."""
+        if id not in self.data:
+            return "error"
 
-    search_text = find.lower()
+        self.data[id] = [first_name, last_name]
+        self.sort_contacts()
+        self.save_contacts()
+        return {id: self.data[id]}
 
-    for id, name in contacts.items():
-        first_name = name[0]
-        last_name = name[1]
+    def delete_contact(self, *, id):
+        """Delete an existing contact and return its information."""
+        if id not in self.data:
+            return "error"
 
-        if search_text in first_name.lower() or search_text in last_name.lower():
-            found[id] = name
+        deleted_contact = {id: self.data.pop(id)}
+        self.save_contacts()
+        return deleted_contact
 
-    return sort_contacts(found)
-
-def print_list(contacts):
-    # Print the contacts in sorted order.
-    sorted_contacts = sort_contacts(contacts)
-
-    print("==================== CONTACT LIST ====================")
-    print("Last Name           First Name          Phone")
-    print("==================== ==================== ==========")
-
-    for id, name in sorted_contacts.items():
-        print(f"{name[1]:20}{name[0]:20}{id}")
-
-def print_found(contacts):
-    # Print contacts.
-    print("================== FOUND CONTACT(S) ==================")
-    print("Last Name           First Name          Phone")
-    print("==================== ==================== ==========")
-
-
-    for id, name in contacts.items():
-        print(f"{name[1]:20}{name[0]:20}{id}")
-
+    def set_filename(self, *, filename):
+        """Change the file used to load and save contacts."""
+        self.filename = filename
+        try:
+            with open(self.filename, "r", encoding="utf-8") as file:
+                self.data = json.load(file)
+        except FileNotFoundError:
+            self.data = {}
