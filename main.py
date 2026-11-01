@@ -1,100 +1,88 @@
+from people import Faculty, Student
 
-# Name: Tyler Vasquez
-# Date: 10/22/2026
-# Runs the Tuffy Titan Contact List menu.
-
-import contacts
+faculty = []
+students = []
 
 
-def print_contact_list(contact_list):
-    """Print all contacts in alphabetical order."""
-    print("==================== CONTACT LIST ====================")
-    print(f'{"Last Name":22}{"First Name":22}{"Phone":12}')
-    print(f'{"====================":22}{"====================":22}{"==========":12}')
+def add_faculty():
+    firstname = input("Enter first name: ")
+    lastname = input("Enter last name: ")
+    department = input("Enter department: ")
 
-    for phone, names in contact_list.data.items():
-        first_name, last_name = names
-        print(f"{last_name:22}{first_name:22}{phone:12}")
+    new_faculty = Faculty(firstname, lastname, department)
+    faculty.append(new_faculty)
 
 
-def main():
-    """Run the Tuffy Titan Contact List application."""
-    contact_list = contacts.Contacts(filename="contacts.json")
+def print_faculty():
+    print("======================= FACULTY =======================")
+    print(f'{"Record":8}{"Name":20}{"Department":25}')
+    print(f'{"======":8}{"====================":20}{"=========================":25}')
 
-    while True:
-        print("*** TUFFY TITAN CONTACT MAIN MENU")
-        print("1. Add contact")
-        print("2. Modify contact")
-        print("3. Delete contact")
-        print("4. Print contact list")
-        print("5. Set contact filename")
-        print("6. Exit the program")
+    for i in range(len(faculty)):
+        name = faculty[i].firstname + " " + faculty[i].lastname
+        print(f"{i:<8}{name:20}{faculty[i].department:25}")
 
-        choice = input("Enter menu choice: ").strip()
 
-        if choice == "1":
-            phone = input("Enter phone number: ").strip()
-            first_name = input("Enter first name: ").strip()
-            last_name = input("Enter last name: ").strip()
+def add_student():
+    firstname = input("Enter first name: ")
+    lastname = input("Enter last name: ")
+    classyear = input("Enter class year: ")
+    major = input("Enter major: ")
 
-            result = contact_list.add_contact(
-                id=phone,
-                first_name=first_name,
-                last_name=last_name
-            )
+    print_faculty()
+    advisor_number = int(input("Enter faculty advisor: "))
 
-            if result == "error2":
-                print("Phone number already exists.")
-            else:
-                print(f"Added: {first_name} {last_name}.")
+    if advisor_number >= 0 and advisor_number < len(faculty):
+        new_student = Student(firstname, lastname)
 
-        elif choice == "2":
-            phone = input("Enter phone number: ").strip()
-            first_name = input("Enter first name: ").strip()
-            last_name = input("Enter last name: ").strip()
+        new_student.set_class(classyear)
+        new_student.set_major(major)
+        new_student.set_advisor(faculty[advisor_number])
 
-            result = contact_list.modify_contact(
-                id=phone,
-                first_name=first_name,
-                last_name=last_name
-            )
+        students.append(new_student)
+    else:
+        print("Invalid faculty record number.")
 
-            if result == "error":
-                print("Invalid phone number.")
-            else:
-                print(f"Modified: {first_name} {last_name}.")
 
-        elif choice == "3":
-            phone = input("Enter phone number: ").strip()
+def print_students():
+    print("===================================== STUDENTS ======================================")
+    print(f'{"Name":20}{"Class":10}{"Major":26}{"Advisor":25}')
+    print(f'{"====================":20}{"========":10}{"=========================":26}{"=========================":25}')
 
-            result = contact_list.delete_contact(id=phone)
+    for student in students:
+        name = student.firstname + " " + student.lastname
+        advisor = student.advisor.firstname + " " + student.advisor.lastname
 
-            if result == "error":
-                print("Invalid phone number.")
-            else:
-                first_name, last_name = result[phone]
-                print(f"Deleted: {first_name} {last_name}.")
+        print(f"{name:20}{student.classyear:10}{student.major:26}{advisor:25}")
 
-        elif choice == "4":
-            print_contact_list(contact_list)
 
-        elif choice == "5":
-            filename = input("Enter contact filename: ").strip()
+while True:
+    print("\n *** TUFFY TITAN STUDENT/FACULTY MAIN MENU")
+    print("1. Add faculty")
+    print("2. Print faculty")
+    print("3. Add student")
+    print("4. Print student")
+    print("9. Exit the program")
 
-            if filename:
-                contact_list.set_filename(filename=filename)
-                print(f"Contact filename set to {filename}.")
-            else:
-                print("Filename cannot be empty.")
+    choice = input("Enter menu choice: ")
 
-        elif choice == "6":
-            break
+    if choice == "1":
+        add_faculty()
 
+    elif choice == "2":
+        print_faculty()
+
+    elif choice == "3":
+        if len(faculty) > 0:
+            add_student()
         else:
-            print("Invalid menu choice.")
+            print("Add faculty first.")
 
-        print()
+    elif choice == "4":
+        print_students()
 
+    elif choice == "9":
+        break
 
-if __name__ == "__main__":
-    main()
+    else:
+        print("Invalid choice.")
